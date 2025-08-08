@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en"> <!-- Removed initial "dark-mode" class; JS will control this -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integrated Science App Booklet</title>
+    <!-- Favicon Links -->
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <!-- Updated for Bullseye Emoji Favicon -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%3E%3Ctext%20y%3D%22.9em%22%20font-size%3D%2290%22%3E%F0%9F%8E%AF%3C%2Ftext%3E%3C%2Fsvg%3E" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
+
+    <!-- Google Analytics (gtag.js) -->
+    <!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-PWG8HDB9');</script>
+<!-- End Google Tag Manager -->
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Configure Tailwind to use 'class' for dark mode */
+        /* This tells Tailwind to look for a 'dark' class on the HTML element */
+        html.dark {
+            /* This is a dummy rule; Tailwind will generate actual dark mode styles */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden; /* Prevent horizontal scrolling */
+            scroll-behavior: smooth; /* Smooth scrolling for anchor links */
+        }
+        /* Custom animation for the phone component - updated to 'float' */
+        @keyframes float {
+            0% { transform: translateY(0px) translateX(0px) rotateZ(0deg); }
+            50% { transform: translateY(-10px) translateX(5px) rotateZ(1deg); }
+            100% { transform: translateY(0px) translateX(0px) rotateZ(0deg); }
+        }
+        .animate-float-subtle {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* Basic container styling for page sections */
+        .page-section {
+            display: none; /* Hidden by default */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box; /* Ensure padding doesn't cause overflow */
+            transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for theme change */
+        }
+
+        /* Show the active page */
+        .page-section.active {
+            display: flex;
+        }
+
+        /* Phone frame styling - UPDATED FOR RESPONSIVENESS */
+        .phone-frame {
+            position: relative;
+            width: 90%; /* Fluid width relative to parent */
+            max-width: 250px; /* Max width for smaller screens, will scale up with media queries */
+            aspect-ratio: 250 / 500; /* Maintain 1:2 aspect ratio (width / height) */
+            background-color: #000;
+            border-radius: 30px;
+            padding: 10px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background-color: #fff;
+            border-radius: 20px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative; /* Needed for spinner positioning */
+        }
+
+        .product-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Ensure the image fits within the screen */
+            transition: opacity 0.3s ease-in-out; /* Smooth transition for image visibility */
+        }
+
+        /* Loading spinner styling */
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #3b82f6; /* Blue spinner */
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            position: absolute;
+            z-index: 10;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Media queries for responsiveness - now mainly adjust max-width and border/padding */
+        @media (min-width: 640px) {
+            .phone-frame {
+                max-width: 300px; /* Larger max-width for tablets */
+                border-radius: 35px;
+                padding: 12px;
+            }
+            .phone-screen {
+                border-radius: 25px;
+            }
+        }
+        @media (min-width: 1024px) {
+            .phone-frame {
+                max-width: 350px; /* Even larger max-width for desktops */
+                border-radius: 40px;
+                padding: 15px;
+            }
+            .phone-screen {
+                border-radius: 30px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100">
+    <!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PWG8HDB9"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+    <!-- Theme Toggle Button -->
+    <button id="themeToggle" class="fixed top-4 right-4 z-50 p-2 rounded-full bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-300" aria-label="Toggle theme">
+        <!-- Moon icon for light mode, Sun icon for dark mode -->
+        <svg id="moonIcon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="display: none;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+        </svg>
+        <svg id="sunIcon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="display: none;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h1M4 12H3m15.325 6.675l-.707-.707M6.675 6.675l-.707-.707m10.65 0l-.707.707M6.675 17.325l-.707.707M12 18a6 6 0 100-12 6 6 0 000 12z"></path>
+        </svg>
+    </button>
+
+    <!-- Navigation Bar -->
+    <nav class="fixed top-0 left-0 right-0 z-40 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md shadow-md p-4 flex justify-center space-x-4 md:space-x-8 rounded-b-lg">
+        <button class="nav-button text-gray-800 dark:text-gray-100 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition duration-300 py-2 px-4 rounded-full" data-page-id="landingPage" aria-label="Go to Home page">Home</button>
+        <button class="nav-button text-gray-800 dark:text-gray-100 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition duration-300 py-2 px-4 rounded-full" data-page-id="redirectPage" aria-label="Go to Feedback page">Feedback</button>
+        <button class="nav-button text-gray-800 dark:text-gray-100 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition duration-300 py-2 px-4 rounded-full" data-page-id="contactPage" aria-label="Go to Contact page">Contact</button>
+    </nav>
+
+
+    <!-- Main Container for the Application -->
+    <div id="app" class="min-h-screen flex flex-col items-center justify-center pt-20"> <!-- Added padding-top to account for fixed nav -->
+
+        <!-- 1. Product Landing Page -->
+        <section id="landingPage" class="page-section active bg-gradient-to-br from-blue-500 to-indigo-600 dark:from-gray-800 dark:to-gray-900 text-white dark:text-gray-100 w-full">
+            <div class="max-w-4xl mx-auto p-8 rounded-lg">
+                <h1 class="text-4xl sm:text-5xl font-extrabold mb-6 leading-tight">Integrated Science Revision Made Easy! 📚🔬</h1>
+                <p class="text-lg sm:text-xl mb-10 opacity-90">
+                    Introducing the <strong>Interactive Science Booklet</strong> – your ultimate mobile companion for revising and learning Integrated Science. Designed for students, this app booklet transforms complex topics into engaging, easy-to-digest content, right on your phone!
+                </p>
+
+                <!-- Animated Phone Component -->
+                <div class="relative w-full flex justify-center mb-12">
+                    <div class="phone-frame animate-float-subtle">
+                        <div class="phone-screen">
+                            <!-- Loading Spinner -->
+                            <div id="imageSpinner" class="loading-spinner"></div>
+                            <!-- Placeholder for your Figma product image -->
+                            <img id="productImage" src="images/app_screenshot.png" alt="App Booklet Screenshot" class="product-image opacity-0" onerror="this.src='https://placehold.co/300x600/b0b0b0/ffffff?text=Image+Not+Found';">
+                        </div>
+                        <!-- Speaker cut-out (aesthetic) -->
+                        <div class="absolute top-4 left-1/2 -translate-x-1/2 w-10 h-1.5 bg-gray-700 rounded-full"></div>
+                    </div>
+                </div>
+
+                <ul class="text-left text-base sm:text-lg mb-10 space-y-3 opacity-90">
+                    <li class="flex items-center justify-center sm:justify-start">
+                        <span class="mr-3 text-yellow-300">✨</span>
+                        <strong>Simplified Concepts:</strong> Understand difficult topics effortlessly.
+                    </li>
+                    <li class="flex items-center justify-center sm:justify-start">
+                        <span class="mr-3 text-yellow-300">💡</span>
+                        <strong>Interactive Quizzes:</strong> Test your knowledge and track progress.
+                    </li>
+                    <li class="flex items-center justify-center sm:justify-start">
+                        <span class="mr-3 text-yellow-300">📈</span>
+                        <strong>Revision Made Easy:</strong> Perfect for exam preparation.
+                    </li>
+                </ul>
+
+                <button id="learnMoreButton" class="bg-yellow-400 hover:bg-yellow-500 text-indigo-800 font-bold py-3 px-8 rounded-full shadow-lg transform transition duration-300 ease-in-out hover:scale-105 focus:outline-none focus:ring-4 focus:ring-yellow-300 focus:ring-opacity-75 text-lg" aria-label="Learn more about the app">
+                    Tell Me More!
+                </button>
+            </div>
+        </section>
+
+        <!-- 2. Google Form Redirect Page -->
+        <!-- This section is now optional/can be removed if "Tell Me More" links directly to the form -->
+        <section id="redirectPage" class="page-section bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 w-full">
+            <div class="max-w-2xl mx-auto p-8 rounded-lg shadow-xl bg-white dark:bg-gray-700">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-6 text-indigo-700 dark:text-indigo-400">Ready to Help Us Improve? 🚀</h2>
+                <p class="text-lg sm:text-xl mb-8">
+                    We're building the best revision tool for Integrated Science, and your feedback is crucial! Please click the button below to share your thoughts and help shape the future of this app booklet.
+                </p>
+                <p class="text-md mb-8 text-gray-600 dark:text-gray-400">
+                    You'll be redirected to a secure Google Form.
+                </p>
+                <button id="googleFormButton" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition duration-300 ease-in-out hover:scale-105 focus:outline-none focus:ring-4 focus:ring-green-400 focus:ring-opacity-75 text-lg" aria-label="Go to feedback form">
+                    Go to Feedback Form
+                </button>
+            </div>
+        </section>
+
+        <!-- 3. Thank You Page -->
+        <section id="thankYouPage" class="page-section bg-purple-600 dark:bg-purple-800 text-white dark:text-gray-100 w-full">
+            <div class="max-w-2xl mx-auto p-8 rounded-lg">
+                <h2 class="text-4xl sm:text-5xl font-extrabold mb-6 leading-tight">Thank You! 🎉</h2>
+                <p class="text-lg sm:text-xl mb-10 opacity-90">
+                    We appreciate you taking the time to provide your valuable feedback. Your input will help us make the Integrated Science Booklet truly exceptional. Stay tuned for updates!
+                </p>
+                <button class="bg-white hover:bg-gray-100 text-purple-700 dark:bg-gray-200 dark:hover:bg-gray-300 dark:text-purple-900 font-bold py-3 px-8 rounded-full shadow-lg transform transition duration-300 ease-in-out hover:scale-105 focus:outline-none focus:ring-4 focus:ring-white focus:ring-opacity-75 text-lg nav-button" data-page-id="landingPage" aria-label="Back to home page">
+                    Back to Home
+                </button>
+            </div>
+        </section>
+
+        <!-- 4. Contact Page (New Section) -->
+        <section id="contactPage" class="page-section bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 w-full">
+            <div class="max-w-2xl mx-auto p-8 rounded-lg shadow-xl bg-white dark:bg-gray-800">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-6 text-indigo-700 dark:text-indigo-400">Get in Touch! ✉️</h2>
+                <p class="text-lg sm:text-xl mb-8">
+                    Have questions, suggestions, or just want to say hello? We'd love to hear from you!
+                </p>
+                <div class="space-y-4 text-left text-lg sm:text-xl mb-8">
+                    <p class="flex items-center justify-center sm:justify-start">
+                        <svg class="w-6 h-6 mr-3 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.9 5.3a2 2 0 002.2 0L21 8m-1 10a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2h12a2 2 0 012 2v10z"></path></svg>
+                        Email: <a href="mailto:info@example.com" class="ml-2 text-blue-600 dark:text-blue-400 hover:underline">science-circuit.yard318@passinbox.com</a>
+                    </p>
+                    <!-- Removed Phone -->
+                    <!-- Removed Address -->
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 py-6 text-center text-sm mt-auto w-full">
+        <p>&copy; 2025 Integrated Science App Booklet. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Get references to page sections
+        const landingPage = document.getElementById('landingPage');
+        const redirectPage = document.getElementById('redirectPage'); // Still keep reference even if not directly navigated to by learnMoreButton
+        const thankYouPage = document.getElementById('thankYouPage');
+        const contactPage = document.getElementById('contactPage');
+
+        // Get references to buttons and elements
+        const learnMoreButton = document.getElementById('learnMoreButton');
+        const googleFormButton = document.getElementById('googleFormButton');
+        const productImage = document.getElementById('productImage');
+        const imageSpinner = document.getElementById('imageSpinner');
+        const themeToggle = document.getElementById('themeToggle');
+        const moonIcon = document.getElementById('moonIcon');
+        const sunIcon = document.getElementById('sunIcon');
+        const navButtons = document.querySelectorAll('.nav-button');
+
+        // --- Configuration ---
+        // IMPORTANT: Replace this with your actual Google Form URL
+        const GOOGLE_FORM_URL = 'https://forms.gle/XTebtrn3gzo1pcLp6'; // Example URL, replace this!
+
+        // URL for your Figma product image (updated to a local path)
+        const FIGMA_IMAGE_URL = 'images/app_screenshot.png'; // Using a placeholder for demonstration
+
+        // --- Functions ---
+
+        /**
+         * Shows a specific page section and hides others.
+         * @param {string} pageId The ID of the page section to show.
+         */
+        function showPage(pageId) {
+            // Hide all pages
+            landingPage.classList.remove('active');
+            redirectPage.classList.remove('active');
+            thankYouPage.classList.remove('active');
+            contactPage.classList.remove('active');
+
+            // Show the requested page
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+                // Scroll to the top of the newly active section for consistent view
+                window.scrollTo({
+                    top: targetPage.offsetTop - (document.querySelector('nav')?.offsetHeight || 0),
+                    behavior: 'smooth'
+                });
+            } else {
+                landingPage.classList.add('active');
+                console.error('Invalid page ID provided:', pageId);
+            }
+        }
+
+        /**
+         * Applies the given theme (light or dark) to the document.
+         * Stores the preference in local storage.
+         * @param {string} theme 'light' or 'dark'
+         */
+        function applyTheme(theme) {
+            const htmlElement = document.documentElement;
+            if (theme === 'dark') {
+                htmlElement.classList.add('dark');
+                moonIcon.style.display = 'block';
+                sunIcon.style.display = 'none';
+                themeToggle.setAttribute('aria-label', 'Switch to light theme');
+            } else {
+                htmlElement.classList.remove('dark');
+                moonIcon.style.display = 'none';
+                sunIcon.style.display = 'block';
+                themeToggle.setAttribute('aria-label', 'Switch to dark theme');
+            }
+            localStorage.setItem('theme', theme);
+        }
+
+        /**
+         * Toggles the current theme between light and dark.
+         */
+        function toggleTheme() {
+            const currentTheme = localStorage.getItem('theme');
+            if (currentTheme === 'dark') {
+                applyTheme('light');
+            } else {
+                applyTheme('dark');
+            }
+        }
+
+        /**
+         * Loads the theme preference from local storage or system preference.
+         */
+        function loadTheme() {
+            const storedTheme = localStorage.getItem('theme');
+            if (storedTheme) {
+                applyTheme(storedTheme);
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                // Default to dark mode if system preference is dark
+                applyTheme('dark');
+            } else {
+                // Default to light mode
+                applyTheme('light');
+            }
+        }
+
+        // --- Event Listeners ---
+
+        // learnMoreButton now directly links to Google Form and shows Thank You page
+        learnMoreButton.addEventListener('click', () => {
+            window.open(GOOGLE_FORM_URL, '_blank');
+            showPage('thankYouPage');
+        });
+
+        // googleFormButton still does the same
+        googleFormButton.addEventListener('click', () => {
+            window.open(GOOGLE_FORM_URL, '_blank');
+            showPage('thankYouPage');
+        });
+
+        themeToggle.addEventListener('click', toggleTheme);
+
+        // Add event listeners for navigation buttons
+        navButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const pageId = button.getAttribute('data-page-id');
+                if (pageId) {
+                    showPage(pageId);
+                }
+            });
+        });
+
+        // Image loading handling with spinner
+        function loadImageWithSpinner() {
+            productImage.src = FIGMA_IMAGE_URL; // Set the image source
+            imageSpinner.style.display = 'block'; // Show spinner
+            productImage.style.opacity = '0'; // Hide image
+
+            productImage.onload = () => {
+                imageSpinner.style.display = 'none'; // Hide spinner
+                productImage.style.opacity = '1'; // Show image
+            };
+
+            productImage.onerror = () => {
+                imageSpinner.style.display = 'none'; // Hide spinner even if error
+                productImage.style.opacity = '1'; // Still try to show fallback image
+                console.error('Failed to load product image. Using fallback.');
+            };
+        }
+
+        // --- Initialization ---
+
+        // Load the theme on page load
+        loadTheme();
+
+        // Load the product image with spinner
+        loadImageWithSpinner();
+
+        // Ensure the correct page is shown on initial load
+        showPage('landingPage');
+
+        window.addEventListener('resize', () => {
+            // No specific JS resize logic needed for this setup due to Tailwind's responsiveness
+        });
+    </script>
+</body>
+</html>
